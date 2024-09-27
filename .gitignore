@@ -1,0 +1,12 @@
+node_modules
+.esbuild
+.serverless
+coverage
+.npmrc
+.yarnrc
+.eslintcache
+.nvmrc
+.DS_Store
+/tmp
+.env.local
+.idea

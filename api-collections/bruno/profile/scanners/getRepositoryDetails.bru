@@ -1,0 +1,38 @@
+meta {
+  name: getRepositoryDetails
+  type: graphql
+  seq: 2
+}
+
+post {
+  url: http://localhost:3000/graphql
+  body: graphql
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:graphql {
+  query GetRepositoryDetails($input: GetRepositoryDetailsInput!) {
+    getRepositoryDetails(input: $input) {
+      success
+      errors {
+        type
+        message
+      }
+      doc
+    }
+  }
+  
+}
+
+body:graphql:vars {
+  {
+    "input": {
+      "repository": "FX_NMV_1",
+      "token": "123" 
+    }
+  }
+}

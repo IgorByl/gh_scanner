@@ -1,0 +1,5 @@
+.esbuild
+.vscode
+.idea
+node_modules
+tmp
