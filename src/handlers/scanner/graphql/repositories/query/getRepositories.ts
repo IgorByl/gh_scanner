@@ -1,5 +1,6 @@
 import { GetRepositoriesArgs, GetRepositoriesResponse, Repository } from '~/handlers/scanner/types';
 import { getErrorMessage, getRepositoryURL } from '~/helpers';
+import { GitHubRepositoryDetails } from '~/types';
 import { fetchWithRetry } from '~/utils';
 
 export async function getRepositories(args: GetRepositoriesArgs): Promise<GetRepositoriesResponse> {
@@ -11,7 +12,7 @@ export async function getRepositories(args: GetRepositoriesArgs): Promise<GetRep
       },
     } = args;
 
-    const response = await fetchWithRetry<Record<string, unknown>[]>(
+    const response = await fetchWithRetry<GitHubRepositoryDetails[]>(
       getRepositoryURL(owner, type),
       {
         headers: {
@@ -28,7 +29,7 @@ export async function getRepositories(args: GetRepositoriesArgs): Promise<GetRep
         data.push({
           name: response[i]?.name,
           size: response[i]?.size,
-          owner: (response[i]?.owner as Record<string, unknown>)?.login,
+          owner: response[i]?.owner?.login,
         } as Repository);
       }
     }

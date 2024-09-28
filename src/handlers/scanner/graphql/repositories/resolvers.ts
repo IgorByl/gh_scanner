@@ -1,12 +1,16 @@
+import Queue, { QueueWorkerCallback } from 'queue';
+
 import {
   GetRepositoriesArgs,
   GetRepositoriesResponse,
-  // GetRepositoryDetailsArgs,
-  // GetRepositoryDetailsResponse,
+  GetRepositoryDetailsArgs,
+  GetRepositoryDetailsResponse,
   ReqParent,
 } from '../../types';
 
-import { getRepositories } from './query';
+import { getRepositories, getRepositoryDetails } from './query';
+
+const queue = new Queue({ concurrency: 2, autostart: true });
 
 export const repositoryResolvers = {
   Query: {
@@ -14,9 +18,21 @@ export const repositoryResolvers = {
       _parent: ReqParent,
       args: GetRepositoriesArgs
     ): Promise<GetRepositoriesResponse> => getRepositories(args),
-    // getRepositoryDetails: (
-    //   _parent: ReqParent,
-    //   args: GetRepositoryDetailsArgs
-    // ): Promise<GetRepositoryDetailsResponse> => getRepositoryDetails(args),
+    getRepositoryDetails: (
+      _parent: ReqParent,
+      args: GetRepositoryDetailsArgs
+    ): Promise<GetRepositoryDetailsResponse> =>
+      new Promise((resolve, reject) => {
+        queue.push(async (cb) => {
+          try {
+            const details = await getRepositoryDetails(args);
+            resolve(details);
+          } catch (err) {
+            reject(err);
+          } finally {
+            (cb as QueueWorkerCallback)();
+          }
+        });
+      }),
   },
 };

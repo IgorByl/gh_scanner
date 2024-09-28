@@ -1,5 +1,7 @@
 import type { Context, APIGatewayProxyEventV2, APIGatewayProxyEventHeaders } from 'aws-lambda';
 
+import { Owner } from '~/constants';
+
 export interface ManagementContext {
   headers: APIGatewayProxyEventHeaders;
   functionName: string;
@@ -13,26 +15,46 @@ export interface BasicError {
 }
 
 export type ReqParent = Record<string, unknown>;
-export type RepositoryStatus = 'PUBLIC' | 'PRIVATE';
-export type RepositoryOwner = 'USER' | 'ORGANIZATION';
+export type RepositoryStatus = 'public' | 'private';
+export type RepositoryOwner = Owner.User | Owner.Organizarion;
 
 export interface BasicResponseWithErrors<T> {
   success: boolean;
   errors?: BasicError[];
-  data?: T[];
+  data?: T;
 }
 
 export type Repository = {
   name: string;
-  size: string;
+  size: number;
   owner: string;
+};
+
+export type Webhook = {
+  type: string;
+  id: number;
+  name: string;
+  active: boolean;
+  events: string[];
+  config: {
+    content_type: string;
+    insecure_ssl: string;
+    url: string;
+  };
+  updated_at: string;
+  created_at: string;
+  url: string;
+  test_url: string;
+  ping_url: string;
+  deliveries_url: string;
+  last_response: { code: number; status?: string; message: string };
 };
 
 export type RepositoryDetails = Repository & {
   status: RepositoryStatus;
-  filesAmount: number;
-  activeWebhooks: [string];
-  ymlContent: string;
+  amountOfFiles: number;
+  activeWebhooks: Webhook[];
+  ymlContent?: string;
 };
 
 type RepositoryProfile = {
@@ -59,6 +81,8 @@ export type GetRepositoryDetailsArgs = {
   input: GetRepositoryDetailsInput;
 };
 
-export interface GetRepositoriesResponse extends BasicResponseWithErrors<Repository> {}
+export interface GetRepositoriesResponse extends BasicResponseWithErrors<Repository[]> {}
 
-export interface GetRepositoryDetailsResponse extends BasicResponseWithErrors<RepositoryDetails> {}
+export interface GetRepositoryDetailsResponse extends BasicResponseWithErrors<RepositoryDetails> {
+  data?: RepositoryDetails;
+}

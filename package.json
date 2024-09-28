@@ -23,7 +23,8 @@
     "apollo-server-lambda": "3.13.0",
     "graphql": "16.8.1",
     "graphql-constraint-directive": "^5.4.3",
-    "graphql-scalars": "1.23.0"
+    "graphql-scalars": "1.23.0",
+    "queue": "^7.0.0"
   },
   "devDependencies": {
     "@swc/core": "1.7.10",

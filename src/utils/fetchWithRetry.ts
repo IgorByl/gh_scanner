@@ -18,8 +18,10 @@ export async function fetchWithRetry<T>(
     const response = await fetch(url, options);
 
     if (!response.ok) {
-      if (response.status === 401 || response.status === 403) {
+      if (response.status === 401) {
         throw new Error(`AUTHORIZATION_FAILED`);
+      } else if (response.status === 403) {
+        throw new Error(`FORBIDDEN`);
       } else if (response.status >= 400 && response.status < 500) {
         console.error(`Client error: ${response.status} - ${response.statusText}`);
       } else if (response.status >= 500 && retries > 0) {
