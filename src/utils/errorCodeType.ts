@@ -1,8 +1,4 @@
-type ErrorCodeType =
-  | 'AUTHORIZATION_FAILED'
-  | 'INTERNAL_SERVER_ERROR'
-  | 'USER_TOKEN_EXPIRED'
-  | 'TOKEN_IS_NOT_PROVIDEN';
+import { ErrorCodeType } from '~/types';
 
 export function getErrorMessageByCode(code: ErrorCodeType): string {
   let description = '';

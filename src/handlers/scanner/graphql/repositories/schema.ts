@@ -6,15 +6,20 @@ export const repositoriesSchema = gql`
     PRIVATE
   }
 
+  enum RepositoryOwner {
+    USER
+    ORGANIZATION
+  }
+
   type Repository {
     name: String
-    size: String
+    size: Int
     owner: String
   }
 
   type RepositoryDetail {
     name: String
-    size: String
+    size: Int
     owner: String
     status: RepositoryStatus
     filesAmount: Int
@@ -22,26 +27,32 @@ export const repositoriesSchema = gql`
     ymlContent: String
   }
 
+  input RepositoryProfile {
+    owner: String! @constraint(minLength: 1)
+    type: RepositoryOwner!
+  }
+
   input GetRepositoriesInput {
-    profile: String!
-    token: String!
+    profile: RepositoryProfile
+    token: String! @constraint(minLength: 1)
   }
 
   input GetRepositoryDetailsInput {
-    repository: String!
-    token: String!
+    repository: String! @constraint(minLength: 1)
+    token: String! @constraint(minLength: 1)
+    owner: String! @constraint(minLength: 1)
   }
 
   type GetRepositoriesResponse implements ResponseWithErrors {
     success: Boolean
     errors: [BasicError]
-    doc: [Repository]
+    data: [Repository]
   }
 
   type GetRepositoryDetailsResponse implements ResponseWithErrors {
     success: Boolean
     errors: [BasicError]
-    doc: RepositoryDetail
+    data: RepositoryDetail
   }
 
   extend type Query {

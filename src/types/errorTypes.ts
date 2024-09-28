@@ -1,0 +1,5 @@
+export type ErrorCodeType =
+  | 'AUTHORIZATION_FAILED'
+  | 'INTERNAL_SERVER_ERROR'
+  | 'USER_TOKEN_EXPIRED'
+  | 'TOKEN_IS_NOT_PROVIDEN';

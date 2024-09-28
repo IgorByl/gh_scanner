@@ -1,10 +1,12 @@
 import {
   GetRepositoriesArgs,
   GetRepositoriesResponse,
-  GetRepositoryDetailsArgs,
-  GetRepositoryDetailsResponse,
+  // GetRepositoryDetailsArgs,
+  // GetRepositoryDetailsResponse,
   ReqParent,
 } from '../../types';
+
+import { getRepositories } from './query';
 
 export const repositoryResolvers = {
   Query: {
@@ -12,9 +14,9 @@ export const repositoryResolvers = {
       _parent: ReqParent,
       args: GetRepositoriesArgs
     ): Promise<GetRepositoriesResponse> => getRepositories(args),
-    getRepositoryDetails: (
-      _parent: ReqParent,
-      args: GetRepositoryDetailsArgs
-    ): Promise<GetRepositoryDetailsResponse> => getRepositoryDetails(args),
+    // getRepositoryDetails: (
+    //   _parent: ReqParent,
+    //   args: GetRepositoryDetailsArgs
+    // ): Promise<GetRepositoryDetailsResponse> => getRepositoryDetails(args),
   },
 };

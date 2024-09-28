@@ -2,7 +2,7 @@ import { ApolloServer } from 'apollo-server-lambda';
 import { ExpressContext } from 'apollo-server-express';
 import type { Context, APIGatewayProxyEventV2 } from 'aws-lambda';
 
-import { schema } from './graphql';
+import { schemaWithConstrains as schema } from './graphql';
 import { ManagementContext } from './types';
 
 import { formatError } from '~/helpers';

@@ -22,7 +22,11 @@ body:graphql {
         type
         message
       }
-      doc
+      data {
+        name
+        size
+        owner
+      }
     }
   }
   
@@ -31,8 +35,9 @@ body:graphql {
 body:graphql:vars {
   {
     "input": {
-      "repository": "FX_NMV_1",
-      "token": "123" 
+      "owner": "IgorByl",
+      "repository": "123-Essential-JavaScript-Interview-Questions",
+      "token": "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" 
     }
   }
 }

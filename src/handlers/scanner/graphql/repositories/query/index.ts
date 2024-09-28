@@ -1,2 +1,2 @@
 export * from './getRepositories';
-export * from './getRepositoryDetails';
+// export * from './getRepositoryDetails';

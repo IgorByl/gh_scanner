@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 
-import { getErrorMessageByCode } from '~/utils/getErrorMessage';
+import { getErrorMessageByCode } from '~/utils';
 
 export const formatError = (error: GraphQLError): Error => {
   // eslint-disable-next-line no-console

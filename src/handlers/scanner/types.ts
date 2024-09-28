@@ -14,11 +14,12 @@ export interface BasicError {
 
 export type ReqParent = Record<string, unknown>;
 export type RepositoryStatus = 'PUBLIC' | 'PRIVATE';
+export type RepositoryOwner = 'USER' | 'ORGANIZATION';
 
 export interface BasicResponseWithErrors<T> {
   success: boolean;
   errors?: BasicError[];
-  data: T[];
+  data?: T[];
 }
 
 export type Repository = {
@@ -34,14 +35,20 @@ export type RepositoryDetails = Repository & {
   ymlContent: string;
 };
 
+type RepositoryProfile = {
+  owner: string;
+  type: RepositoryOwner;
+};
+
 export type GetRepositoriesInput = {
-  profile: string;
+  profile: RepositoryProfile;
   token: string;
 };
 
 export type GetRepositoryDetailsInput = {
   repository: string;
   token: string;
+  owner: string;
 };
 
 export type GetRepositoriesArgs = {

@@ -1,7 +1,7 @@
 meta {
   name: getRepositories
   type: graphql
-  seq: 3
+  seq: 1
 }
 
 post {
@@ -22,7 +22,11 @@ body:graphql {
         type
         message
       }
-      doc
+      data {
+        name
+        size
+        owner
+      }
     }
   }
   
@@ -31,8 +35,11 @@ body:graphql {
 body:graphql:vars {
   {
     "input": {
-      "profile": "FX_NMV_1",
-      "token": "123" 
+      "profile": {
+        "owner": "IgorByl",
+        "type": "USER"
+      },
+      "token": "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" 
     }
   }
 }
