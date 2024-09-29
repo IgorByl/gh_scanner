@@ -26,6 +26,32 @@ body:graphql {
         name
         size
         owner
+        status
+        amountOfFiles
+        activeWebhooks {
+          type
+          id
+          name
+          active
+          events
+          config {
+            content_type
+            insecure_ssl
+            url
+          }
+          updated_at
+          created_at
+          url
+          test_url
+          ping_url
+          deliveries_url
+          last_response {
+            code
+            status
+            message
+          }
+        }
+        ymlContent
       }
     }
   }
@@ -36,8 +62,8 @@ body:graphql:vars {
   {
     "input": {
       "owner": "IgorByl",
-      "repository": "techmart",
-      "token": "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" 
+      "repository": "GreenridgeApp",
+      "token": "" 
     }
   }
 }

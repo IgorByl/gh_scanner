@@ -2,8 +2,8 @@ import { gql } from 'apollo-server-lambda';
 
 export const repositoriesSchema = gql`
   enum RepositoryStatus {
-    PUBLIC
-    PRIVATE
+    public
+    private
   }
 
   enum RepositoryOwner {
@@ -13,8 +13,35 @@ export const repositoriesSchema = gql`
 
   type Repository {
     name: String
-    size: Int
+    size: Int # size in kb
     owner: String
+  }
+
+  type WebhookConfig {
+    content_type: String
+    insecure_ssl: String
+    url: String
+  }
+  type WebhookResponse {
+    code: Int
+    status: String
+    message: String
+  }
+
+  type Webhook {
+    type: String
+    id: Int
+    name: String
+    active: Boolean
+    events: [String]
+    config: WebhookConfig
+    updated_at: String
+    created_at: String
+    url: String
+    test_url: String
+    ping_url: String
+    deliveries_url: String
+    last_response: WebhookResponse
   }
 
   type RepositoryDetail {
@@ -22,8 +49,8 @@ export const repositoriesSchema = gql`
     size: Int
     owner: String
     status: RepositoryStatus
-    filesAmount: Int
-    activeWebhooks: [String]
+    amountOfFiles: Int
+    activeWebhooks: [Webhook]
     ymlContent: String
   }
 

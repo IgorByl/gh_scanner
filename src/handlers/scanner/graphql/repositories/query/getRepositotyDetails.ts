@@ -5,77 +5,60 @@ import {
   RepositoryDetails,
   Webhook,
 } from '~/handlers/scanner/types';
-import { getErrorMessage, getRepositoryFilesInfo } from '~/helpers';
-import { GitHubRepositoryDetails, GitHubResource, GitHubYmlFile, RequestOptions } from '~/types';
-import { fetchWithRetry } from '~/utils';
+import { getRepositoryFilesInfo, getRequestOptions } from '~/helpers';
+import { GitHubRepositoryDetails, GitHubResource, GitHubYmlFile } from '~/types';
+import { fetchWithRetry, getErrorMessage, getErrorType } from '~/utils';
 
 export async function getRepositoryDetails(
   args: GetRepositoryDetailsArgs
 ): Promise<GetRepositoryDetailsResponse> {
-  let repoDetails;
   let activeWebhooks: Webhook[] = [];
-  let ymlContent;
-  let amountOfFiles;
+  let ymlContent: string | undefined;
 
   try {
     const {
       input: { repository, owner, token },
     } = args;
 
-    const options: RequestOptions = {
-      headers: {
-        Authorization: `token ${token}`,
-        'User-Agent': '',
-      },
-    };
+    const [details, filesInfo, webhooks] = await Promise.all([
+      fetchWithRetry<GitHubRepositoryDetails>(
+        `${GITHUB_URL}/repos/${owner}/${repository}`,
+        getRequestOptions(token)
+      ),
+      getRepositoryFilesInfo<GitHubResource>(
+        `${GITHUB_URL}/repos/${owner}/${repository}/contents`,
+        getRequestOptions(token),
+        fetchWithRetry
+      ),
+      fetchWithRetry<Webhook[]>(
+        `${GITHUB_URL}/repos/${owner}/${repository}/hooks`,
+        getRequestOptions(token)
+      ),
+    ]);
 
-    const details = await fetchWithRetry<GitHubRepositoryDetails>(
-      `${GITHUB_URL}/repos/${owner}/${repository}`,
-      options
-    );
+    let ymlFile: GitHubYmlFile;
 
-    if (details) {
-      repoDetails = {
-        name: details?.name,
-        size: details?.size,
-        owner: details?.owner?.login,
-        status: details?.visibility,
-      };
+    if (filesInfo.firstYmlPath) {
+      ymlFile = await fetchWithRetry<GitHubYmlFile>(
+        `${GITHUB_URL}/repos/${owner}/${repository}/contents/${filesInfo.firstYmlPath}`,
+        getRequestOptions(token)
+      );
 
-      const [filesInfo, webhooks] = await Promise.all([
-        getRepositoryFilesInfo<GitHubResource>(
-          `${GITHUB_URL}/repos/${owner}/${repository}/contents`,
-          options,
-          fetchWithRetry
-        ),
-        fetchWithRetry<Webhook[]>(`${GITHUB_URL}/repos/${owner}/${repository}/hooks`, options),
-      ]);
+      ymlContent = Buffer.from(ymlFile.content, ymlFile.encoding).toString('utf-8');
+    }
 
-      amountOfFiles = filesInfo.amount;
-
-      if (Array.isArray(webhooks)) {
-        activeWebhooks = webhooks.filter((hook) => hook.active);
-      }
-
-      let ymlFile: GitHubYmlFile;
-
-      if (filesInfo.firstYmlPath) {
-        ymlFile = await fetchWithRetry<GitHubYmlFile>(
-          `${GITHUB_URL}/repos/${owner}/${repository}/contents/${filesInfo.firstYmlPath}`,
-          options
-        );
-
-        ymlContent = Buffer.from(ymlFile.content, ymlFile.encoding).toString('utf-8');
-      }
-    } else {
-      throw new Error('Resource is not found.');
+    if (Array.isArray(webhooks)) {
+      activeWebhooks = webhooks.filter((hook) => hook.active);
     }
 
     return {
       success: true,
       data: {
-        ...repoDetails,
-        amountOfFiles,
+        name: details?.name,
+        size: details?.size,
+        owner: details?.owner?.login,
+        status: details?.visibility,
+        amountOfFiles: filesInfo.amount,
         activeWebhooks,
         ymlContent,
       } as RepositoryDetails,
@@ -85,7 +68,7 @@ export async function getRepositoryDetails(
       success: false,
       errors: [
         {
-          type: 'INTERNAL_SERVER_ERROR',
+          type: getErrorType('INTERNAL_SERVER_ERROR'),
           message: getErrorMessage(error),
         },
       ],

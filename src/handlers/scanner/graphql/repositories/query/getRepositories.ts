@@ -1,7 +1,7 @@
 import { GetRepositoriesArgs, GetRepositoriesResponse, Repository } from '~/handlers/scanner/types';
-import { getErrorMessage, getRepositoryURL } from '~/helpers';
+import { getRepositoryURL, getRequestOptions } from '~/helpers';
 import { GitHubRepositoryDetails } from '~/types';
-import { fetchWithRetry } from '~/utils';
+import { fetchWithRetry, getErrorMessage, getErrorType } from '~/utils';
 
 export async function getRepositories(args: GetRepositoriesArgs): Promise<GetRepositoriesResponse> {
   try {
@@ -14,15 +14,10 @@ export async function getRepositories(args: GetRepositoriesArgs): Promise<GetRep
 
     const response = await fetchWithRetry<GitHubRepositoryDetails[]>(
       getRepositoryURL(owner, type),
-      {
-        headers: {
-          Authorization: `token ${token}`,
-          'User-Agent': '',
-        },
-      }
+      getRequestOptions(token)
     );
 
-    const data = [];
+    const data: Repository[] = [];
 
     if (Array.isArray(response)) {
       for (let i = 0; i < response.length; i += 1) {
@@ -30,7 +25,7 @@ export async function getRepositories(args: GetRepositoriesArgs): Promise<GetRep
           name: response[i]?.name,
           size: response[i]?.size,
           owner: response[i]?.owner?.login,
-        } as Repository);
+        });
       }
     }
 
@@ -39,11 +34,13 @@ export async function getRepositories(args: GetRepositoriesArgs): Promise<GetRep
       data,
     };
   } catch (error) {
+    console.log(error);
+
     return {
       success: false,
       errors: [
         {
-          type: 'INTERNAL_SERVER_ERROR',
+          type: getErrorType('INTERNAL_SERVER_ERROR'),
           message: getErrorMessage(error),
         },
       ],

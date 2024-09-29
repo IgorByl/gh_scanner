@@ -5,7 +5,7 @@ import type { Context, APIGatewayProxyEventV2 } from 'aws-lambda';
 import { schemaWithConstrains as schema } from './graphql';
 import { ManagementContext } from './types';
 
-import { formatError } from '~/helpers';
+import { formatError } from '~/utils';
 
 const apolloServer = new ApolloServer({
   schema,
@@ -31,7 +31,7 @@ const apolloServer = new ApolloServer({
     };
   },
   formatError: (error): Error => formatError(error),
-  introspection: false,
+  introspection: true,
 });
 
 export const handler = apolloServer.createHandler({

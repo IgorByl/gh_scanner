@@ -1,3 +1,5 @@
+import { getErrorMessageByCode } from './errorCodeType';
+
 /**
  * Makes a fetch request to the specified URL with automatic retries for server-side errors (5xx).
  *
@@ -19,11 +21,13 @@ export async function fetchWithRetry<T>(
 
     if (!response.ok) {
       if (response.status === 401) {
-        throw new Error(`AUTHORIZATION_FAILED`);
+        throw new Error(getErrorMessageByCode('AUTHORIZATION_FAILED'));
       } else if (response.status === 403) {
-        throw new Error(`FORBIDDEN`);
+        throw new Error(getErrorMessageByCode('FORBIDDEN'));
+      } else if (response.status === 404) {
+        throw new Error(getErrorMessageByCode('NOT_FOUND'));
       } else if (response.status >= 400 && response.status < 500) {
-        console.error(`Client error: ${response.status} - ${response.statusText}`);
+        throw new Error(`Client error: ${response.status} - ${response.statusText}`);
       } else if (response.status >= 500 && retries > 0) {
         throw new Error(`Server error: ${response.status} - ${response.statusText}`);
       }

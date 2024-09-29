@@ -8,12 +8,16 @@ export function getErrorMessageByCode(code: ErrorCodeType): string {
       description = 'Internal Server Error.';
       break;
 
-    case 'TOKEN_IS_NOT_PROVIDEN':
-      description = 'The Auth Token is not provided.';
+    case 'AUTHORIZATION_FAILED':
+      description = 'The Auth Token is not valid.';
       break;
 
-    case 'USER_TOKEN_EXPIRED':
-      description = 'User token expired.';
+    case 'FORBIDDEN':
+      description = 'The access is not allowed.';
+      break;
+
+    case 'NOT_FOUND':
+      description = 'Resource is not found.';
       break;
 
     default:
